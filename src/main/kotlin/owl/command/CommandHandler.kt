@@ -2,7 +2,6 @@ package owl.command
 
 import at.favre.lib.crypto.bcrypt.BCrypt
 import com.mojang.brigadier.arguments.StringArgumentType
-import me.lucko.fabric.api.permissions.v0.Permissions
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.minecraft.server.command.CommandManager
 import net.minecraft.server.command.ServerCommandSource
@@ -195,7 +194,7 @@ object CommandHandler {
     }
 
     private fun hasPermission(source: ServerCommandSource, node: String, defaultValue: Boolean): Boolean {
-        return Permissions.check(source, node, defaultValue)
+        return PermissionBridge.hasPermission(source, node, defaultValue)
     }
 
     private fun describeSource(source: ServerCommandSource): String {

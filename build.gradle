@@ -57,17 +57,17 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-        it.options.release = 22
+        it.options.release = 21
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
         compilerOptions {
-                jvmTarget.set(JvmTarget.JVM_22)
+                jvmTarget.set(JvmTarget.JVM_21)
         }
 }
 
 kotlin {
-        jvmToolchain(22)
+        jvmToolchain(21)
 }
 
 java {
@@ -76,7 +76,7 @@ java {
         // If you remove this line, sources will not be generated.
         withSourcesJar()
 
-        toolchain.languageVersion.set(JavaLanguageVersion.of(22))
+        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 jar {

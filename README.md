@@ -11,7 +11,7 @@ Offline Whitelist Login is a production-ready Fabric server mod for Minecraft 1.
 - Automatic enforcement of login timeouts and failure limits with logging before kicking suspicious users.
 - Console logging for every registration, login and failed login attempt.
 - Minute-by-minute verification that every connected player is still whitelisted.
-- Permission-gated management commands (`owl.add` defaults to allowed, `owl.remove` defaults to denied) with automatic kicking and data cleanup when removing a user.
+- Permission-gated management commands (`owl.add` defaults to allowed, `owl.remove` defaults to denied) with automatic kicking and data cleanup when removing a user, plus operator-only fallbacks when the Fabric Permissions API is unavailable.
 
 ## Commands
 
@@ -48,7 +48,7 @@ User data and runtime settings are stored in `config/owl.json` using the followi
 
 ## Building
 
-1. Install JDK 22 or newer.
+1. Install JDK 21 or newer.
 2. Run `./gradlew build` (the first build downloads the toolchain and may take a few minutes).
 3. The distributable jar will be located in `build/libs/offline-whitelist-login-<version>.jar`.
 
