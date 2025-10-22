@@ -27,8 +27,14 @@ class OwlConfigManager(
         var loginTimeoutSeconds: Int = DEFAULT_LOGIN_TIMEOUT_SECONDS
     )
 
+    data class CommandAccessOptions(
+        var allowOwlAddForEveryone: Boolean = DEFAULT_ALLOW_OWL_ADD,
+        var allowOwlRemoveForEveryone: Boolean = DEFAULT_ALLOW_OWL_REMOVE
+    )
+
     private data class PersistedData(
         var config: ConfigOptions = ConfigOptions(),
+        var commands: CommandAccessOptions = CommandAccessOptions(),
         var users: MutableList<String> = mutableListOf()
     )
 
@@ -39,6 +45,7 @@ class OwlConfigManager(
 
     private val users: MutableMap<String, StoredUser> = mutableMapOf()
     private var options: ConfigOptions = ConfigOptions()
+    private var commandOptions: CommandAccessOptions = CommandAccessOptions()
 
     fun load() {
         Files.createDirectories(configDir)
@@ -61,6 +68,7 @@ class OwlConfigManager(
             logger.warn("No whitelist data found. Starting with an empty configuration.")
             users.clear()
             options = ConfigOptions()
+            commandOptions = CommandAccessOptions()
             ensurePersisted()
         }
     }
@@ -162,6 +170,10 @@ class OwlConfigManager(
 
     fun loginTimeoutSeconds(): Long = synchronized(lock) { options.loginTimeoutSeconds.toLong() }
 
+    fun owlAddAllowedForEveryone(): Boolean = synchronized(lock) { commandOptions.allowOwlAddForEveryone }
+
+    fun owlRemoveAllowedForEveryone(): Boolean = synchronized(lock) { commandOptions.allowOwlRemoveForEveryone }
+
     private fun ensurePersisted() {
         try {
             Files.createDirectories(configDir)
@@ -172,7 +184,14 @@ class OwlConfigManager(
                 StandardOpenOption.TRUNCATE_EXISTING,
                 StandardOpenOption.WRITE
             ).use { writer ->
-                gson.toJson(PersistedData(options.copy(), serializeUsers()), writer)
+                gson.toJson(
+                    PersistedData(
+                        options.copy(),
+                        commandOptions.copy(),
+                        serializeUsers()
+                    ),
+                    writer
+                )
             }
             try {
                 Files.move(
@@ -228,21 +247,32 @@ class OwlConfigManager(
 
     private fun applyState(input: PersistedData) {
         val sanitizedOptions = sanitizeOptions(input.config)
+        val sanitizedCommands = sanitizeCommands(input.commands)
         val sanitizedUsers = sanitizeUsers(input.users)
         options = sanitizedOptions
+        commandOptions = sanitizedCommands
         users.clear()
         users.putAll(sanitizedUsers)
     }
 
     private fun sanitizeOptions(raw: ConfigOptions?): ConfigOptions {
-        val defaults = ConfigOptions()
         if (raw == null) {
-            return defaults
+            return ConfigOptions()
         }
         val minLength = raw.minPasswordLength.coerceIn(MIN_PASSWORD_LENGTH_MIN, BCRYPT_MAX_INPUT_LENGTH)
         val maxAttempts = raw.maxLoginAttempts.coerceAtLeast(MIN_LOGIN_ATTEMPTS)
         val timeout = raw.loginTimeoutSeconds.coerceAtLeast(MIN_LOGIN_TIMEOUT_SECONDS)
         return ConfigOptions(minLength, maxAttempts, timeout)
+    }
+
+    private fun sanitizeCommands(raw: CommandAccessOptions?): CommandAccessOptions {
+        if (raw == null) {
+            return CommandAccessOptions()
+        }
+        return CommandAccessOptions(
+            raw.allowOwlAddForEveryone,
+            raw.allowOwlRemoveForEveryone
+        )
     }
 
     private fun sanitizeUsers(raw: MutableList<String>?): Map<String, StoredUser> {
@@ -272,6 +302,8 @@ class OwlConfigManager(
         private const val DEFAULT_MIN_PASSWORD_LENGTH = 5
         private const val DEFAULT_MAX_LOGIN_ATTEMPTS = 5
         private const val DEFAULT_LOGIN_TIMEOUT_SECONDS = 300
+        private const val DEFAULT_ALLOW_OWL_ADD = true
+        private const val DEFAULT_ALLOW_OWL_REMOVE = false
         private const val MIN_PASSWORD_LENGTH_MIN = 1
         private const val BCRYPT_MAX_INPUT_LENGTH = 72
         private const val MIN_LOGIN_ATTEMPTS = 1

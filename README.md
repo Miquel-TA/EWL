@@ -11,16 +11,16 @@ Offline Whitelist Login is a production-ready Fabric server mod for Minecraft 1.
 - Automatic enforcement of login timeouts and failure limits with logging before kicking suspicious users.
 - Console logging for every registration, login and failed login attempt.
 - Minute-by-minute verification that every connected player is still whitelisted.
-- Permission-gated management commands (`owl.add` defaults to allowed, `owl.remove` defaults to denied) with automatic kicking and data cleanup when removing a user, plus operator-only fallbacks when the Fabric Permissions API is unavailable.
+- Config-driven management commands for `/owl add` and `/owl remove`, including automatic kicking and data cleanup when removing a user. By default anyone can add players, while removals stay restricted to operators unless the config opts into broader access.
 
 ## Commands
 
-| Command | Description | Permission |
+| Command | Description | Access (default) |
 | --- | --- | --- |
 | `/register <password>` | Registers a password for the current player and logs them in. | Player only |
 | `/login <password>` | Logs in using the stored password hash. | Player only |
-| `/owl add <username>` | Adds a username to the whitelist data file so they can register. | `owl.add` (default allow) |
-| `/owl remove <username>` | Removes a username from the whitelist, deletes their credentials and kicks them if online. | `owl.remove` (default deny) |
+| `/owl add <username>` | Adds a username to the whitelist data file so they can register. | Everyone (`commands.allowOwlAddForEveryone = true`) |
+| `/owl remove <username>` | Removes a username from the whitelist, deletes their credentials and kicks them if online. | Operators unless `commands.allowOwlRemoveForEveryone` is true |
 
 All other commands are blocked for unauthenticated players by a command dispatcher guard.
 
@@ -35,6 +35,10 @@ User data and runtime settings are stored in `config/owl.json` using the followi
     "maxLoginAttempts": 5,
     "loginTimeoutSeconds": 300
   },
+  "commands": {
+    "allowOwlAddForEveryone": true,
+    "allowOwlRemoveForEveryone": false
+  },
   "users": [
     "PlayerOne:$2a$12$...",
     "PlayerTwo:"
@@ -44,6 +48,7 @@ User data and runtime settings are stored in `config/owl.json` using the followi
 
 - Credentials are serialized as a single string per user (`<username>:<bcrypt-hash>`). Unregistered users appear with an empty hash (e.g., `PlayerTwo:`).
 - Runtime settings clamp to safe minimums (password length ≥ 1, login attempts ≥ 1, login timeout ≥ 10 seconds) even if lower values are configured.
+- Command toggles let you decide whether `/owl add` and `/owl remove` are available to every player or restricted to operators.
 - Every write produces an updated backup file (`config/owl_backup.json`). If the primary file becomes unreadable, the backup is restored automatically on the next server start.
 
 ## Building

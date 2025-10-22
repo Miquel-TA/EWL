@@ -130,7 +130,7 @@ object CommandHandler {
                 CommandManager.literal("owl")
                     .then(
                         CommandManager.literal("add")
-                            .requires { hasPermission(it, "owl.add", true) }
+                            .requires { canExecuteOwlCommand(it, config.owlAddAllowedForEveryone()) }
                             .then(
                                 CommandManager.argument("username", StringArgumentType.word())
                                     .executes { context ->
@@ -155,7 +155,7 @@ object CommandHandler {
                     )
                     .then(
                         CommandManager.literal("remove")
-                            .requires { hasPermission(it, "owl.remove", false) }
+                            .requires { canExecuteOwlCommand(it, config.owlRemoveAllowedForEveryone()) }
                             .then(
                                 CommandManager.argument("username", StringArgumentType.word())
                                     .executes { context ->
@@ -193,8 +193,14 @@ object CommandHandler {
         }
     }
 
-    private fun hasPermission(source: ServerCommandSource, node: String, defaultValue: Boolean): Boolean {
-        return PermissionBridge.hasPermission(source, node, defaultValue)
+    private fun canExecuteOwlCommand(source: ServerCommandSource, allowForEveryone: Boolean): Boolean {
+        if (source.entity == null) {
+            return true
+        }
+        if (allowForEveryone) {
+            return true
+        }
+        return source.hasPermissionLevel(3)
     }
 
     private fun describeSource(source: ServerCommandSource): String {
