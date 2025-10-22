@@ -3,46 +3,30 @@
 	"id": "offline-whitelist-login",
 	"version": "${version}",
 	"name": "Offline Whitelist Login",
-	"description": "This is an example description! Tell everyone what your mod is about!",
-	"authors": [
-		"Me!"
-	],
-	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
-	},
-	"license": "CC0-1.0",
-	"icon": "assets/offline-whitelist-login/icon.png",
-	"environment": "*",
-	"entrypoints": {
-		"main": [
-			{
-				"value": "owl.OfflineWhitelistLogin",
-				"adapter": "kotlin"
-			}
-		],
-		"client": [
-			{
-				"value": "owl.OfflineWhitelistLoginClient",
-				"adapter": "kotlin"
-			}
-		]
-	},
-	"mixins": [
-		"offline-whitelist-login.mixins.json",
-		{
-			"config": "offline-whitelist-login.client.mixins.json",
-			"environment": "client"
-		}
-	],
-	"depends": {
-		"fabricloader": ">=0.17.3",
-		"minecraft": "~1.21.1",
-		"java": ">=21",
-		"fabric-api": "*",
-		"fabric-language-kotlin": "*"
-	},
-	"suggests": {
-		"another-mod": "*"
-	}
+        "description": "Production-ready authentication layer that augments the vanilla whitelist with secure login and registration.",
+        "authors": [
+                "owl"
+        ],
+        "contact": {},
+        "license": "CC0-1.0",
+        "icon": "assets/offline-whitelist-login/icon.png",
+        "environment": "server",
+        "entrypoints": {
+                "main": [
+                        {
+                                "value": "owl.OfflineWhitelistLogin",
+                                "adapter": "kotlin"
+                        }
+                ]
+        },
+        "mixins": [
+                "offline-whitelist-login.mixins.json"
+        ],
+        "depends": {
+                "fabricloader": ">=0.17.3",
+                "minecraft": "~1.21.1",
+                "java": ">=22",
+                "fabric-api": "*",
+                "fabric-language-kotlin": "*"
+        }
 }
