@@ -46,6 +46,8 @@ dependencies {
 
         implementation("at.favre.lib:bcrypt:0.10.2")
         include("at.favre.lib:bcrypt:0.10.2")
+        implementation("at.favre.lib:bytes:1.5.0")
+        include("at.favre.lib:bytes:1.5.0")
 }
 
 processResources {
