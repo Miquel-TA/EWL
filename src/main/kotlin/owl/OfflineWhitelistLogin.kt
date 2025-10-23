@@ -15,6 +15,7 @@ import owl.session.PlayerSessionManager
 import java.time.Instant
 
 object OfflineWhitelistLogin : ModInitializer {
+    const val UNAUTHORIZED_JOIN_MESSAGE = "You are not authorized to join this server."
     private val logger = LoggerFactory.getLogger("offline-whitelist-login")
     private const val WHITELIST_AUDIT_INTERVAL_TICKS = 20 * 60
 
@@ -45,7 +46,7 @@ object OfflineWhitelistLogin : ModInitializer {
 
             if (!configManager.isWhitelisted(username)) {
                 logger.warn("Rejected connection from {}: not present in whitelist", username)
-                handler.disconnect(Text.literal("You are not authorized to join this server."))
+                handler.disconnect(Text.literal(UNAUTHORIZED_JOIN_MESSAGE))
                 return@register
             }
 
@@ -67,6 +68,11 @@ object OfflineWhitelistLogin : ModInitializer {
             sessionManager.endSession(handler.player.uuid)
         }
     }
+
+    fun isConfigLoaded(): Boolean = this::configManager.isInitialized
+
+    fun isUserAuthorized(username: String): Boolean =
+        isConfigLoaded() && configManager.isWhitelisted(username)
 
     private fun registerTickEvents() {
         ServerTickEvents.END_SERVER_TICK.register { server ->

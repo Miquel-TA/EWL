@@ -3,7 +3,8 @@
 	"package": "owl.mixin",
         "compatibilityLevel": "JAVA_21",
         "mixins": [
-                "CommandManagerMixin"
+                "CommandManagerMixin",
+                "PlayerManagerWhitelistMixin"
         ],
 	"injectors": {
 		"defaultRequire": 1

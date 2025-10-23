@@ -4,7 +4,7 @@ Offline Whitelist Login is a production-ready Fabric server mod for Minecraft 1.
 
 ## Features
 
-- Username-based whitelist that works whether or not the vanilla whitelist is enabled.
+- Username-based whitelist that works whether or not the vanilla whitelist is enabled, overriding vanilla checks so authorized players connect even when the built-in whitelist is active.
 - Secure registration flow that stores BCrypt hashed passwords in `config/owl.json` and automatically maintains a backup at `config/owl_backup.json`.
 - Players join in spectator mode, cannot move, and have all commands blocked except `/register` and `/login` until they authenticate.
 - Configurable timeout, password policy (default minimum length 5), and failed attempt limit (default 5 tries) stored in `config/owl.json`.
